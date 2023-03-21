@@ -10,7 +10,8 @@
 
 .navbar {
   grid-area: navbar;
-  background-color: lightcyan;
+  background-color: #48475f;
+  color: white;
 }
 
 .product-pane {

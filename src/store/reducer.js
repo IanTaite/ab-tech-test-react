@@ -6,6 +6,7 @@ export const reducer = (state, action) => {
         return {
           ...state,
           cart: {
+            ...state.cart,
             items: state.cart.items.map((item) =>
               item.sku === action.payload.sku
               ? { ...item, quantity: item.quantity + 1, subTotal: item.unitPrice * (item.quantity + 1) }
@@ -21,6 +22,7 @@ export const reducer = (state, action) => {
         return {
           ...state,
           cart: {
+            ...state.cart,
             grandTotal: newGrandTotal,
             items: newCartItems
           },
@@ -38,6 +40,7 @@ export const reducer = (state, action) => {
         return {
           ...state,
           cart: {
+            ...state.cart,
             grandTotal: newGrandTotal,
             items: newCartItems
           },
@@ -50,6 +53,7 @@ export const reducer = (state, action) => {
       return {
         ...state,
         cart: {
+          ...state.cart,
           grandTotal: newGrandTotal,
           items: newCartItems
         },
@@ -63,6 +67,7 @@ export const reducer = (state, action) => {
       return {
         ...state,
         cart: {
+          ...state.cart,
           grandTotal: newGrandTotal,
           items: newCartItems
         },
