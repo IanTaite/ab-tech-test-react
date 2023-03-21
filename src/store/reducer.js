@@ -1,24 +1,22 @@
 export const reducer = (state, action) => {
   switch (action.type) {
     case "[Cart] add product to cart": {
-      const exists = state.cart.items.find((item) => item.sku === action.payload.sku);
+      const {sku, title, unitPrice, thumbnail } = action.payload;
+      const exists = state.cart.items.find((item) => item.sku === sku);
       if (exists) { // update item
+        const newCartItems = state.cart.items.map((item) => item.sku === sku ? { ...item, quantity: item.quantity + 1, subTotal: item.unitPrice * (item.quantity + 1) } : item );
+        const newGrandTotal = newCartItems.reduce((total, item) => total + item.subTotal, 0);
         return {
           ...state,
           cart: {
             ...state.cart,
-            items: state.cart.items.map((item) =>
-              item.sku === action.payload.sku
-              ? { ...item, quantity: item.quantity + 1, subTotal: item.unitPrice * (item.quantity + 1) }
-              : item
-            )
+            grandTotal: newGrandTotal,
+            items: newCartItems,
           },
         };
-      }
-      if (!exists) { // add item
-        const {sku, title, unitPrice, thumbnail } = action.payload;
+      } else { // add item
         const newCartItems = [...state.cart.items, { sku, title, unitPrice, quantity: 1, subTotal: unitPrice, thumbnail } ];
-        const newGrandTotal = newCartItems.reduce((total, item) => total + item.unitPrice, 0);
+        const newGrandTotal = newCartItems.reduce((total, item) => total + item.subTotal, 0);
         return {
           ...state,
           cart: {
@@ -36,7 +34,7 @@ export const reducer = (state, action) => {
       }
       if (existingItem) {
         const newCartItems = state.cart.items.filter((item) => item !== existingItem);
-        const newGrandTotal = newCartItems.reduce((total, item) => total + item.unitPrice, 0);
+        const newGrandTotal = newCartItems.reduce((total, item) => total + item.subTotal, 0);
         return {
           ...state,
           cart: {
@@ -49,7 +47,7 @@ export const reducer = (state, action) => {
     }
     case "[Cart] increment product quantity": {
       const newCartItems = state.cart.items.map((item) => item.sku === action.payload.sku ? { ...item, quantity: item.quantity + 1, subTotal: item.unitPrice * (item.quantity + 1) } : item );
-      const newGrandTotal = newCartItems.reduce((total, item) => total + (item.unitPrice * item.quantity), 0);
+      const newGrandTotal = newCartItems.reduce((total, item) => total + item.subTotal, 0);
       return {
         ...state,
         cart: {
@@ -63,7 +61,7 @@ export const reducer = (state, action) => {
       const newCartItems = state.cart.items
         .map((item) => item.sku === action.payload.sku ? { ...item, quantity: item.quantity - 1, subTotal: item.unitPrice * (item.quantity - 1) } : item )
         .filter((item) => item.subTotal > 0);
-      const newGrandTotal = newCartItems.reduce((total, item) => total + (item.unitPrice * item.quantity), 0);
+      const newGrandTotal = newCartItems.reduce((total, item) => total + item.subTotal, 0);
       return {
         ...state,
         cart: {
